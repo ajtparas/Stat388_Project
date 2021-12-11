@@ -1,0 +1,94 @@
+---
+title: "MissingDataImputation"
+author: "Rachel Gordon"
+date: "12/9/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+data <- read.csv("trainClassification.csv")
+```
+
+
+```{r}
+# replace missing data
+# mean for numeric and mode for character variables
+
+# replace with the mean
+data$min_temp[is.na(data$min_temp)] <- mean(na.omit(data$min_temp))
+data$max_temp[is.na(data$max_temp)] <- mean(na.omit(data$max_temp))
+data$rainfall[is.na(data$rainfall)] <- mean(na.omit(data$rainfall))
+
+# replace with the mode
+data$evaporation[is.na(data$evaporation)] <- names(table(data$evaporation))[table(data$evaporation)==max(table(data$evaporation))]
+data$sunshine[is.na(data$sunshine)] <- names(table(data$sunshine))[table(data$sunshine)==max(table(data$sunshine))]
+data$wind_gust_dir[is.na(data$wind_gust_dir)] <- names(table(data$wind_gust_dir))[table(data$wind_gust_dir)==max(table(data$wind_gust_dir))]
+
+# replace with the mean
+data$wind_gust_speed[is.na(data$wind_gust_speed)] <- mean(na.omit(data$wind_gust_speed))
+
+# replace with the mode
+data$wind_dir9am[is.na(data$wind_dir9am)] <- names(table(data$wind_dir9am))[table(data$wind_dir9am)==max(table(data$wind_dir9am))]
+data$wind_dir3pm[is.na(data$wind_dir3pm)] <- names(table(data$wind_dir3pm))[table(data$wind_dir3pm)==max(table(data$wind_dir3pm))]
+
+# replace with the mean
+data$wind_speed9am[is.na(data$wind_speed9am)] <- mean(na.omit(data$wind_speed9am))
+data$wind_speed3pm[is.na(data$wind_speed3pm)] <- mean(na.omit(data$wind_speed3pm))
+data$wind_speed9am[is.na(data$wind_speed9am)] <- mean(na.omit(data$wind_speed9am))
+data$wind_speed3pm[is.na(data$wind_speed3pm)] <- mean(na.omit(data$wind_speed3pm))
+data$humidity9am[is.na(data$humidity9am)] <- mean(na.omit(data$humidity9am))
+data$humidity3pm[is.na(data$humidity3pm)] <- mean(na.omit(data$humidity3pm))
+data$pressure9am[is.na(data$pressure9am)] <- mean(na.omit(data$pressure9am))
+data$pressure3pm[is.na(data$pressure3pm)] <- mean(na.omit(data$pressure3pm))
+data$cloud9am[is.na(data$cloud9am)] <- mean(na.omit(data$cloud9am))
+data$cloud3pm[is.na(data$cloud3pm)] <- mean(na.omit(data$cloud3pm))
+data$temp9am[is.na(data$temp9am)] <- mean(na.omit(data$temp9am))
+data$temp3pm[is.na(data$temp3pm)] <- mean(na.omit(data$temp3pm))
+
+# replace with the mode
+data$rain_today[is.na(data$rain_today)] <- names(table(data$rain_today))[table(data$rain_today)==max(table(data$rain_today))]
+```
+
+
+```{r}
+# check missingness again
+# percentage of missing values
+missing_percent <- mean(is.na(data))
+missing_percent
+```
+
+
+```{r}
+# impute missing data
+#library(mice)
+#tempData <- mice(data,m=1,maxit=50,meth='pmm',seed=500)
+#data <- complete(tempData,1)
+```
+
+
+```{r}
+# train a random forest
+
+library(randomForest)
+
+rf <- randomForest(
+  as.factor(rain_tomorrow) ~ .,
+  data = data, ntrees = 500
+)
+
+pred <- predict(rf, newdata=data)
+cm <- table(data$rain_tomorrow, pred)
+cm
+
+n <- sum(cm)
+diag <- diag(cm)
+
+accuracy <- sum(diag)/n
+accuracy
+```
+
