@@ -1,7 +1,7 @@
 ---
-title: "EDA"
-author: "Aldrich Paras"
-date: "11/17/2021"
+title: "EDARegression"
+author: "Rachel Gordon"
+date: "12/14/2021"
 output: html_document
 ---
 
@@ -11,8 +11,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r}
 # import data
-data <- read.csv("trainClassification.csv")
-
+data <- read.csv("Regression/trainRegression.csv")
 ```
 
 ```{r}
@@ -20,62 +19,63 @@ data <- read.csv("trainClassification.csv")
 summary(data)
 ```
 
-
 ```{r}
 # Calculate missing counts for each variable
-date_missing <-  sum(is.na(data["date"]))
-location_missing <- sum(is.na(data["location"]))
-min_temp_missing <-  sum(is.na(data["min_temp"]))
-max_temp_missing <-  sum(is.na(data["max_temp"]))
-rainfall_missing<-  sum(is.na(data["rainfall"]))
-evaporation_missing <-  sum(is.na(data["rainfall"]))
-sunshine_missing <- sum(is.na(data["sunshine"]))
-wind_gust_dir_missing <- sum(is.na(data["wind_gust_dir"]))
-wind_gust_speed_missing <- sum(is.na(data["wind_gust_speed"]))
-wind_dir9am_missing <- sum(is.na(data["wind_dir9am"]))
-wind_dir3pm_missing <- sum(is.na(data["wind_dir3pm"]))
-wind_speed9am_missing <- sum(is.na(data["wind_speed9am"]))
-wind_speed3pm_missing <- sum(is.na(data["wind_speed3pm"]))
-humidity9am_missing <- sum(is.na(data["humidity9am"]))
-humidity3pm_missing <- sum(is.na(data["humidity3pm"]))
-pressure9am_missing <- sum(is.na(data["pressure9am"]))
-pressure3pm_missing <- sum(is.na(data["pressure3pm"]))
-cloud9am_missing <- sum(is.na(data["cloud9am"]))
-cloud3pm_missing <- sum(is.na(data["cloud3pm"]))
-temp9am_missing <- sum(is.na(data["temp9am"]))
-temp3pm_missing <- sum(is.na(data["temp3pm"]))
-rain_today_missing <- sum(is.na(data["rain_today"]))
-rain_tomorrow_missing <- sum(is.na(data["rain_tomorrow"]))
+name_missing <-  sum(is.na(data["name"]))
+host_id_missing <- sum(is.na(data["host_id"]))
+host_name_missing <-  sum(is.na(data["host_name"]))
+neighbourhood_group_missing <-  sum(is.na(data["neighbourhood_group"]))
+neighbourhood_missing <- sum(is.na(data["neighbourhood"]))
+latitude_missing <-  sum(is.na(data["latitude"]))
+longitude_missing <- sum(is.na(data["longitude"]))
+room_type_missing <- sum(is.na(data["room_type"]))
+price_missing <- sum(is.na(data["price"]))
+minimum_nights_missing <- sum(is.na(data["minimum_nights"]))
+number_of_reviews_missing <- sum(is.na(data["number_of_reviews"]))
+last_review_missing <- sum(is.na(data["last_review"]))
+reviews_per_month_missing <- sum(is.na(data["reviews_per_month"]))
+calculated_host_listings_count_missing <- sum(is.na(data["calculated_host_listings_count"]))
+availability_365_missing <- sum(is.na(data["availability_365"]))
+
+name_missing
+host_id_missing
+host_name_missing
+neighbourhood_group_missing
+neighbourhood_missing
+latitude_missing
+longitude_missing
+room_type_missing
+price_missing
+minimum_nights_missing
+number_of_reviews_missing
+last_review_missing
+reviews_per_month_missing
+calculated_host_listings_count_missing
+availability_365_missing
 
 # percentage of missing values
 missing_percent <- mean(is.na(data))
 missing_percent
 ```
-date - 0 Missing
-location - 0 Missing
-min_temp - 157 Missing
-max_temp - 70 Missing
-rainfall - 357 Missing
-evaporation - 357 Missing
-sunshine - 33566 Missing
-wind_gust_dir - 2285 Missing
-wind_gust_speed - 2271 Missing
-wind_dir9am - 2432 Missing
-wind_dir3pm -  941 Missing
-wind_speed9am - 328 Missing
-wind_speed3pm - 650 Missing
-humidity9am - 453 Missing
-humidity3pm - 897 Missing
-pressure9am - 3381 Missing
-pressure3pm - 3376 Missing
-cloud9am - 12886 Missing
-cloud3pm - 13688 Missing
-temp9am - 233 Missing
-temp3pm - 666 Missing
-rain_today - 357 Missing
-rain_tomorrow - 0 Missing
 
-~13.74% of data is missing
+name - 9 Missing
+host_id - 0 Missing
+host_name - 14 Missing
+neighbourhood_group - 0 Missing
+neighbourhood - 0 Missing
+latitude - 0 Missing
+longitude - 0 Missing
+room_type - 0 Missing
+price - 0 Missing
+minimum_nights - 0 Missing
+number_of_reviews - 0 Missing
+last_review - 7008 Missing
+reviews_per_month - 7008 Missing
+calculated_host_listings_count - 0 Missing
+availability_365 - 0 Missing
+
+~ 2.56% of data is missing
+
 
 ```{r}
 # count information and graphs for variables
@@ -147,5 +147,4 @@ ggplot(data, aes(x = rain_today))+ geom_histogram(stat = "count", fill = "tomato
 # rain tomorrow
 ggplot(data, aes(x = rain_tomorrow))+ geom_histogram(stat = "count", fill = "tomato2")+ theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1)) + coord_flip() +ggtitle("Rain Tomorrow")
 ```
-
 
