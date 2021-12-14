@@ -129,16 +129,18 @@ table(predict(svm_search,X_dev), X_dev$rain_tomorrow, dnn=c("Prediction", "Actua
 ```
 
 ```{r}
-
+train <- train[,(3:24)]
+test <- test[,(2:22)]
+test$rain_tomorrow <- factor(rep(0,nrow(test)))
 ## RUN THIS AS IT HAS OPTIMAL PARAMETERS
 # final svm
 
-svm_final <- svm(rain_tomorrow~., data = train, cost = 10, kernel = "radial", probability=TRUE)
+svm_final <- svm(rain_tomorrow~., data = train, cost = 10, kernel = "radial",type="C-classification")
 
-pred <- predict(svm_final, train, probability = TRUE)
-
+pred <- predict(svm_final, test)
 pred
-table(predict(svm_final,train), train$rain_tomorrow, dnn=c("Prediction", "Actual"))
+table(pred, test$rain_tomorrow)
+
 ```
 
 
