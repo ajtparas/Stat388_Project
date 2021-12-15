@@ -169,12 +169,32 @@ answer_final
 
 ```{r}
 # feature importance with gbm
+# create a general boosted model and output predictions for test set
+train_gbm <- train_forest[,]
+levels(train_gbm$rain_today) <- c("0", "1")
+levels(train_gbm$rain_tomorrow) <- c("0", "1")
+train_gbm$rain_today <- as.factor(train_gbm$rain_today)
+train_gbm$rain_tomorrow <- as.character(train_gbm$rain_tomorrow)
 
 library(gbm)
 
-model <- gbm(rain_tomorrow~., distribution = "gaussian", n.trees = 500, data = train_forest)
+model <- gbm(as.numeric(rain_tomorrow)~., distribution = "bernoulli", n.trees = 500, data = train_gbm)
+
 summary(model)
 
+pred <- predict(model,test_forest, type = "response")
+
+
+gbm_ans <- data.frame(test$id,pred)
+
+
+names(gbm_ans)[1] <- "id"
+names(gbm_ans)[2] <- "rain_tomorrow"
+
+gbm_ans
+
 ```
+
+
 
 
