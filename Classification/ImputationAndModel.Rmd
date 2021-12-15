@@ -163,7 +163,6 @@ names(answer_final)[1] <- "id"
 names(answer_final)[2] <- "rain_tomorrow"
 answer_final
 
-write.csv(answer_final,"C:/Users/ajtpa/Desktop/Stat 388 Predictive Analytics/Homework/Project/Stat388_Project/Classification/Submission.csv", row.names = FALSE)
 ```
 
 
