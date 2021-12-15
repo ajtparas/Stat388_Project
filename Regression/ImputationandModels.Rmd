@@ -1,0 +1,132 @@
+---
+title: "ImputationAndModel"
+author: "Rachel Gordon"
+date: "12/14/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+data <- read.csv("trainRegression.csv")
+```
+
+
+```{r}
+# impute missing data
+library(mice)
+tempData <- mice(data,meth='cart',seed=500)
+data_comp <- complete(tempData,1)
+data$reviews_per_month <- data_comp$reviews_per_month
+
+# drop variables with all unique values
+to_drop <- c("id", "name", "host_id", "host_name", "last_review")
+data <- data[ , !(names(data) %in% to_drop)]
+
+# encode categorical variables in training data as factors
+data$neighbourhood_group <- as.factor(data$neighbourhood_group)
+#data$neighbourhood <- as.factor(data$neighbourhood)
+data$room_type <- as.factor(data$room_type)
+
+y_train <- data$price
+X_train <-  data[ , !(names(data) %in% c("price"))]
+
+# percentage of missing values
+missing_percent <- mean(is.na(X_train))
+missing_percent
+```
+
+
+```{r}
+# LASSO
+library(glmnet)
+
+#perform k-fold cross-validation to find optimal lambda value
+cv_model <- cv.glmnet(data.matrix(X_train), y_train, alpha = 1)
+
+#find optimal lambda value that minimizes test MSE
+best_lambda <- cv_model$lambda.min
+best_lambda
+
+#produce plot of test MSE by lambda value
+plot(cv_model) 
+```
+
+
+```{r}
+#find coefficients of best model
+best_model <- glmnet(data.matrix(X_train), y_train, alpha = 1, lambda = best_lambda)
+coef(best_model)
+```
+
+The LASSO did not shrink any of the coefficients all the way to zero.
+
+
+```{r}
+linear_model <- lm(price ~ ., data = data)
+anova(linear_model)
+```
+
+The linear model shows neighbourhood group, neighbourhood, longitude, room type, number of reviews, and availability to be very significant predictors in determining price of an AirBNB.
+
+
+```{r}
+plot(data$longitude, data$price)
+```
+
+```{r}
+plot(data$number_of_reviews, data$price)
+```
+
+```{r}
+plot(data$reviews_per_month, data$price)
+```
+
+
+```{r}
+## Fit random forest and select ntrees using cross validation
+library(randomForest)
+ntrees <- c(200, 500, 800, 1100)
+
+mse <- c()
+for (q in 1:4){
+set.seed(1234)
+fold <- sample(rep(1:5, each = 6845), replace = FALSE)
+yhat <- rep(NA, 34226)
+for (i in 1:5){
+rf <- randomForest(price ~ ., data = data[fold != i,], ntrees = ntrees[q]
+)
+yhat[fold == i] <- predict(rf, data[fold == i,])
+}
+mse[q] <- mean((data$price - yhat)^2)
+}
+
+ntrees
+mse
+```
+
+
+```{r}
+## Fit SVM and select C using cross validation
+library(e1071)
+costs <- c(0.1, 1, 10, 100)
+
+mse <- c()
+for (q in 1:4){
+set.seed(1234)
+fold <- sample(rep(1:5, each = 6845), replace = FALSE)
+yhat <- rep(NA, 34226)
+for (i in 1:5){
+modelsvm <- svm(price ~ ., data = data[fold != i,], cost = costs[q])
+yhat[fold == i] <- predict(modelsvm, data[fold == i,])
+}
+mse[q] <- mean((data$price - yhat)^2)
+}
+
+costs
+mse
+```
+
