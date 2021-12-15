@@ -163,6 +163,10 @@ names(answer_final)[1] <- "id"
 names(answer_final)[2] <- "rain_tomorrow"
 answer_final
 
+answer_final[is.na(answer_final)] <- 0
+answer_final
+
+
 ```
 
 
@@ -192,6 +196,7 @@ names(gbm_ans)[1] <- "id"
 names(gbm_ans)[2] <- "rain_tomorrow"
 
 gbm_ans
+
 
 ```
 
