@@ -17,7 +17,7 @@ test <- read.csv("testClassification.csv")
 
 
 ```{r}
-# replace missing data
+# replace missing data in training set
 # mean for numeric and mode for character variables
 
 # replace with the mean
@@ -53,6 +53,45 @@ data$temp3pm[is.na(data$temp3pm)] <- mean(na.omit(data$temp3pm))
 
 # replace with the mode
 data$rain_today[is.na(data$rain_today)] <- names(table(data$rain_today))[table(data$rain_today)==max(table(data$rain_today))]
+```
+
+```{r}
+# replace missing data in test set
+# mean for numeric and mode for character variables
+
+# replace with the mean
+test$min_temp[is.na(test$min_temp)] <- mean(na.omit(test$min_temp))
+test$max_temp[is.na(test$max_temp)] <- mean(na.omit(test$max_temp))
+test$rainfall[is.na(test$rainfall)] <- mean(na.omit(test$rainfall))
+
+# replace with the mode
+test$evaporation[is.na(test$evaporation)] <- names(table(test$evaporation))[table(test$evaporation)==max(table(test$evaporation))]
+test$sunshine[is.na(test$sunshine)] <- names(table(test$sunshine))[table(test$sunshine)==max(table(test$sunshine))]
+test$wind_gust_dir[is.na(test$wind_gust_dir)] <- names(table(test$wind_gust_dir))[table(test$wind_gust_dir)==max(table(test$wind_gust_dir))]
+
+# replace with the mean
+test$wind_gust_speed[is.na(test$wind_gust_speed)] <- mean(na.omit(test$wind_gust_speed))
+
+# replace with the mode
+test$wind_dir9am[is.na(test$wind_dir9am)] <- names(table(test$wind_dir9am))[table(test$wind_dir9am)==max(table(test$wind_dir9am))]
+test$wind_dir3pm[is.na(test$wind_dir3pm)] <- names(table(test$wind_dir3pm))[table(test$wind_dir3pm)==max(table(test$wind_dir3pm))]
+
+# replace with the mean
+test$wind_speed9am[is.na(test$wind_speed9am)] <- mean(na.omit(test$wind_speed9am))
+test$wind_speed3pm[is.na(test$wind_speed3pm)] <- mean(na.omit(test$wind_speed3pm))
+test$wind_speed9am[is.na(test$wind_speed9am)] <- mean(na.omit(test$wind_speed9am))
+test$wind_speed3pm[is.na(test$wind_speed3pm)] <- mean(na.omit(test$wind_speed3pm))
+test$humidity9am[is.na(test$humidity9am)] <- mean(na.omit(test$humidity9am))
+test$humidity3pm[is.na(test$humidity3pm)] <- mean(na.omit(test$humidity3pm))
+test$pressure9am[is.na(test$pressure9am)] <- mean(na.omit(test$pressure9am))
+test$pressure3pm[is.na(test$pressure3pm)] <- mean(na.omit(test$pressure3pm))
+test$cloud9am[is.na(test$cloud9am)] <- mean(na.omit(test$cloud9am))
+test$cloud3pm[is.na(test$cloud3pm)] <- mean(na.omit(test$cloud3pm))
+test$temp9am[is.na(test$temp9am)] <- mean(na.omit(test$temp9am))
+test$temp3pm[is.na(test$temp3pm)] <- mean(na.omit(test$temp3pm))
+
+# replace with the mode
+test$rain_today[is.na(test$rain_today)] <- names(table(test$rain_today))[table(test$rain_today)==max(table(test$rain_today))]
 ```
 
 ```{r}
@@ -142,7 +181,7 @@ pred
 table(pred, test$rain_tomorrow)
 
 ```
-
+ 
 
 
 
