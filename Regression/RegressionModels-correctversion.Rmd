@@ -1,0 +1,119 @@
+---
+title: "ImputationAndModel"
+author: "Rachel Gordon"
+date: "12/14/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r}
+data <- read.csv("trainRegression.csv")
+```
+
+
+```{r}
+# impute missing data
+library(mice)
+tempData <- mice(data,meth='cart',seed=500)
+data_comp <- complete(tempData,1)
+data$reviews_per_month <- data_comp$reviews_per_month
+
+# drop variables with all unique values
+to_drop <- c("id", "name", "host_id", "host_name", "last_review")
+data <- data[ , !(names(data) %in% to_drop)]
+
+# encode categorical variables in training data as factors
+data$neighbourhood_group <- as.factor(data$neighbourhood_group)
+data$room_type <- as.factor(data$room_type)
+
+y_train <- data$price
+X_train <-  data[ , !(names(data) %in% c("price"))]
+
+# percentage of missing values
+missing_percent <- mean(is.na(X_train))
+missing_percent
+```
+
+
+```{r}
+# LASSO
+library(glmnet)
+
+#perform k-fold cross-validation to find optimal lambda value
+cv_model <- cv.glmnet(data.matrix(X_train), y_train, alpha = 1)
+
+#find optimal lambda value that minimizes test MSE
+best_lambda <- cv_model$lambda.min
+best_lambda
+
+#produce plot of test MSE by lambda value
+plot(cv_model) 
+```
+
+
+```{r}
+#find coefficients of best model
+best_model <- glmnet(data.matrix(X_train), y_train, alpha = 1, lambda = best_lambda)
+coef(best_model)
+```
+
+The LASSO did not shrink any of the coefficients all the way to zero.
+
+
+```{r}
+linear_model <- lm(price ~ ., data = data)
+anova(linear_model)
+```
+
+The linear model shows neighbourhood group, neighbourhood, longitude, room type, number of reviews, and availability to be very significant predictors in determining price of an AirBNB.
+
+
+```{r}
+# visualize the significant relationships with price
+plot(data$neighbourhood_group, data$price)
+plot(data$neighbourhood, data$price)
+plot(data$longitude, data$price)
+plot(data$room_type, data$price)
+plot(data$number_of_reviews, data$price)
+plot(data$availability_365, data$price)
+```
+
+
+```{r}
+# create dev set
+set.seed(123)
+index <- sample(seq_len(nrow(data)), size = nrow(data)*.8)
+train <- train[index, ]
+dev <- train[-index, ]
+```
+
+neighbourhood group, neighbourhood, longitude, room type, number of reviews, and availability
+
+
+
+```{r}
+library(randomForest)
+rf200 <- randomForest(price ~ ., data = train, ntrees = 200)
+yhat200 <- predict(rf200, dev)
+mse200 <- mean((dev$price - yhat200)^2)
+mse200
+
+library(randomForest)
+rf500 <- randomForest(price ~ ., data = train, ntrees = 500)
+yhat500 <- predict(rf500, dev)
+mse500 <- mean((dev$price - yhat500)^2)
+mse500
+
+library(randomForest)
+rf800 <- randomForest(price ~ ., data = train, ntrees = 800)
+yhat800 <- predict(rf800, dev)
+mse800 <- mean((dev$price - yhat800)^2)
+mse800
+```
+
+
+
